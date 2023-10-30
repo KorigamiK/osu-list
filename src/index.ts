@@ -6,7 +6,7 @@ import {
   RealmNamedFileUsage,
   BeatmapMetadata,
   RealmUser,
-} from "./schema/beatmap.js";
+} from "./schema/index.js";
 import { writeSync, readSync, openSync, closeSync, existsSync } from "fs";
 import { exec } from "child_process";
 
@@ -90,6 +90,7 @@ if (filePath && checkFileExists(filePath)) {
 }
 
 // Open file using exo-open.
+console.log(`Playing file ${selectedBeatmapSet.Beatmaps[0].Metadata.Title}`);
 exec(`exo-open ${filePath}`);
 
 /* // Filter for all tasks with a status of "Open".
@@ -99,4 +100,3 @@ realm.close();
 console.log(`realm.isClosed: ${realm.isClosed}`);
 
 closeSync(stdin);
-
