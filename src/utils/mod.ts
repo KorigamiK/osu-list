@@ -1,15 +1,13 @@
-import { openSync, readSync, writeSync } from "fs";
+import path from "node:path";
+import { copyFileSync, existsSync } from "node:fs";
 
-export const stdin = openSync("/dev/stdin", "rs");
-
-export function dataDir(): string | null {
+export function getDataDir(): string | null {
   switch (process.platform) {
     case "linux":
     case "openbsd":
     case "freebsd": {
       const xdg = process.env["XDG_DATA_HOME"];
       if (xdg) return xdg;
-
       const home = process.env["HOME"];
       if (home) return `${home}/.local/share`;
       break;
@@ -28,14 +26,51 @@ export function dataDir(): string | null {
   return null;
 }
 
-export const prompt = (message: string) => {
-  writeSync(process.stdout.fd, message + " ");
-  let s = "";
-  let buf = Buffer.alloc(1);
-  readSync(stdin, buf, 0, 1, null);
-  while (buf[0] != 10 && buf[0] != 13) {
-    s += buf;
-    readSync(stdin, buf, 0, 1, null);
+export function getConfigDir(): string | null {
+  switch (process.platform) {
+    case "openbsd":
+    case "freebsd":
+    case "linux": {
+      const xdg = process.env["XDG_CONFIG_HOME"];
+      if (xdg) return xdg;
+      const home = process.env["HOME"];
+      if (home) return `${home}/.config`;
+      break;
+    }
+
+    case "darwin": {
+      const home = process.env["HOME"];
+      if (home) return `${home}/Library/Preferences`;
+      break;
+    }
+
+    case "win32":
+      return process.env["APPDATA"] ?? null;
   }
-  return s;
-};
+
+  return null;
+}
+
+/**
+ * Get Realm for the app, import to the config if it doesn't exist
+ */
+export function getRealmDBPath(
+  appConfigPath: string,
+  osuDataDir?: string,
+  reload: boolean = false,
+) {
+  const localDBPath = path.join(appConfigPath, "client.realm");
+  if (!reload && existsSync(localDBPath)) return localDBPath;
+
+  const osuDBPath = path.join(osuDataDir || getDataDir()! || ".", "osu", "client.realm");
+  if (existsSync(osuDBPath)) {
+    console.log(
+      `[getRealmDBPath]: ${osuDBPath} is being imported from osu!lazer to ${localDBPath}`,
+    );
+    copyFileSync(osuDBPath, localDBPath);
+    return localDBPath;
+  } else {
+    console.log(`[getRealmDBPath]: ${osuDBPath} not found`);
+    return null;
+  }
+}
