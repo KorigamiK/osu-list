@@ -1,6 +1,7 @@
+// deno-lint-ignore-file no-explicit-any
 import type { ObjectSchema } from "realm";
 import Realm from "realm";
-import { BeatmapMetadata } from "./beatmapMetadata.js";
+import { BeatmapMetadata } from "./beatmapMetadata.ts";
 
 /*
 public class Beatmap : RealmObject {

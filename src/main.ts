@@ -1,28 +1,18 @@
 import Realm from "realm";
 import {
-  BeatmapSet,
   Beatmap,
+  BeatmapMetadata,
+  BeatmapSet,
   RealmFile,
   RealmNamedFileUsage,
-  BeatmapMetadata,
   RealmUser,
-} from "./schema/index.js";
-import { writeSync, readSync, openSync, closeSync, existsSync } from "fs";
-import { exec } from "child_process";
+} from "./schema/index.ts";
+import dir from "dir/mod.ts";
 
-let stdin = openSync("/dev/stdin", "rs");
+console.log("Starting script...");
 
-const prompt = (message: string) => {
-  writeSync(process.stdout.fd, message + " ");
-  let s = "";
-  let buf = Buffer.alloc(1);
-  readSync(stdin, buf, 0, 1, null);
-  while (buf[0] != 10 && buf[0] != 13) {
-    s += buf;
-    readSync(stdin, buf, 0, 1, null);
-  }
-  return s;
-};
+const currentSchema = Realm.schemaVersion("./client.realm");
+console.log(`currentSchema: ${currentSchema}`);
 
 const realm = await Realm.open({
   schema: [
@@ -57,25 +47,28 @@ for (const [i, beatmaps] of beatmapSets.entries()) {
 }
 
 const hashedFilePath = (hash: string) => {
-  return `/home/origami/.local/share/osu/files/${hash.slice(0, 1)}/${hash.slice(
-    0,
-    2,
-  )}/${hash}`;
+  return `${dir("data_local")}/osu/files/${hash.slice(0, 1)}/${
+    hash.slice(
+      0,
+      2,
+    )
+  }/${hash}`;
 };
 
 const getNamedFileHash = (fileName: string, beatmapSet: BeatmapSet) => {
   const files = beatmapSet.Files;
-  for (const file of files)
+  for (const file of files) {
     if (file.Filename == fileName) return file.File.Hash;
+  }
   return undefined;
 };
 
 const checkFileExists = (path: string) => {
-  return existsSync(path);
+  return Deno.statSync(path).isFile;
 };
 
 // Get the map index from the user from the command line.
-const index = parseInt(prompt("Play map:"));
+const index = parseInt(prompt("Play map:") || "0");
 const selectedBeatmapSet = beatmapSets[index];
 console.log(`Map ${index}: ${selectedBeatmapSet.OnlineID}`);
 const fileName = selectedBeatmapSet.Beatmaps[0].Metadata.AudioFile;
@@ -91,12 +84,12 @@ if (filePath && checkFileExists(filePath)) {
 
 // Open file using exo-open.
 console.log(`Playing file ${selectedBeatmapSet.Beatmaps[0].Metadata.Title}`);
-exec(`exo-open ${filePath}`);
+filePath && new Deno.Command(Deno.execPath(), {
+  args: ["exo-open", filePath],
+});
 
 /* // Filter for all tasks with a status of "Open".
 const openTasks = tasks.filtered("status = 'Open'"); */
 
 realm.close();
 console.log(`realm.isClosed: ${realm.isClosed}`);
-
-closeSync(stdin);

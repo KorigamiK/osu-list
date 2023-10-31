@@ -1,6 +1,6 @@
 import type { ObjectSchema } from "realm";
 import Realm from "realm";
-import { RealmFile } from "./realmFile.js";
+import { RealmFile } from "./realmFile.ts";
 
 /* public class RealmNamedFileUsage : EmbeddedObject
 {

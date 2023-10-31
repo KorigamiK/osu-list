@@ -1,0 +1,10 @@
+{
+    "imports": {
+        "realm": "npm:realm@12.2.1",
+        "dir/": "https://deno.land/x/dir@1.5.2/"
+    },
+    "compilerOptions": {},
+    "tasks": {
+        "run": "deno run --unstable --allow-env --allow-net --allow-read --allow-run src/main.ts"
+    }
+}

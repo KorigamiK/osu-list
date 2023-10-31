@@ -1,7 +1,7 @@
 import type { ObjectSchema } from "realm";
 import Realm from "realm";
-import { Beatmap } from "./beatmap.js";
-import { RealmNamedFileUsage } from "./realmNamedFileUsage.js";
+import { Beatmap } from "./beatmap.ts";
+import { RealmNamedFileUsage } from "./realmNamedFileUsage.ts";
 
 export class BeatmapSet extends Realm.Object<BeatmapSet> {
   ID!: string;

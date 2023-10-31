@@ -1,6 +1,6 @@
 import type { ObjectSchema } from "realm";
 import Realm from "realm";
-import { RealmUser } from "./realmUser.js";
+import { RealmUser } from "./realmUser.ts";
 
 /*
 public class BeatmapMetadata : RealmObject {
