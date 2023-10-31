@@ -2,25 +2,6 @@ import type { ObjectSchema } from "realm";
 import Realm from "realm";
 import { RealmUser } from "./realmUser.js";
 
-/*
-public class BeatmapMetadata : RealmObject {
-  public string Title { get; set; } = string.Empty;
-  public string TitleUnicode { get; set; } = string.Empty;
-  public string Artist { get; set; } = string.Empty;
-  public string ArtistUnicode { get; set; } = string.Empty;
-  public RealmUser Author { get; set; } = new RealmUser();
-  public string Source { get; set; } = string.Empty;
-  public string? Tags { get; set; } = string.Empty;
-  public int PreviewTime { get; set; }
-  public string AudioFile { get; set; } = string.Empty;
-  public string BackgroundFile { get; set; } = string.Empty;
-
-  // Author kabii
-  public string OutputAudioFilename(int beatmapId) =>
-      $"{Artist.Trunc(30)} - {Title.Trunc(60)} ({beatmapId}).mp3"
-          .RemoveFilenameCharacters();
-}
-*/
 export class BeatmapMetadata extends Realm.Object<BeatmapMetadata> {
   Title?: string;
   TitleUnicode?: string;
