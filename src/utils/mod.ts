@@ -1,5 +1,5 @@
 import path from "node:path";
-import { copyFileSync, existsSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 
 export function getDataDir(): string | null {
   switch (process.platform) {
@@ -55,18 +55,23 @@ export function getConfigDir(): string | null {
  * Get Realm for the app, import to the config if it doesn't exist
  */
 export function getRealmDBPath(
-  appConfigPath: string,
+  appConfigDir: string,
   osuDataDir?: string,
   reload: boolean = false,
 ) {
-  const localDBPath = path.join(appConfigPath, "client.realm");
+  const localDBPath = path.join(appConfigDir, "client.realm");
   if (!reload && existsSync(localDBPath)) return localDBPath;
 
-  const osuDBPath = path.join(osuDataDir || getDataDir()! || ".", "osu", "client.realm");
+  const osuDBPath = path.join(
+    osuDataDir || getDataDir()! || ".",
+    "osu",
+    "client.realm",
+  );
   if (existsSync(osuDBPath)) {
     console.log(
       `[getRealmDBPath]: ${osuDBPath} is being imported from osu!lazer to ${localDBPath}`,
     );
+    mkdirSync(appConfigDir);
     copyFileSync(osuDBPath, localDBPath);
     return localDBPath;
   } else {

@@ -11,10 +11,13 @@ import { getConfigDir, getDataDir, getRealmDBPath } from "./utils/mod.js";
 import { existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 import prompts from "prompts";
+import path from "node:path";
 
 console.log("[INFO] OSU!list");
 
-const realmDBPath = getRealmDBPath(getConfigDir() || ".");
+const realmDBPath = getRealmDBPath(
+  path.join(getConfigDir() || ".", "osu-play"),
+);
 
 if (realmDBPath == null) {
   console.log("[ERROR] Realm DB not found");
@@ -41,6 +44,8 @@ const realm = await Realm.open({
     );
   },
 });
+
+Realm.flags.ALLOW_CLEAR_TEST_STATE = true;
 
 console.log(`realm.isClosed: ${realm.isClosed}`);
 
@@ -69,10 +74,10 @@ const selectedBeatmapSet = (
     type: "autocomplete",
     name: "beatmapSet",
     message: "Which map do you want to play:",
-    choices: beatmapSets.map((beatmapSet, index) => {
+    choices: beatmapSets.map((beatmapSet) => {
       const meta = beatmapSet.Beatmaps[0].Metadata;
       return {
-        title: `${index}: ${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
+        title: `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
         value: beatmapSet,
       };
     }),
@@ -97,6 +102,8 @@ filePath && execSync(`exo-open ${filePath}`);
 
 realm.close();
 console.log(`realm.isClosed: ${realm.isClosed}`);
+
+// Realm.clearTestState();
 
 // Realm doesn't exit on its own, see: realm-js#4535
 process.exit(0);
