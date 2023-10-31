@@ -7,9 +7,9 @@ import {
   RealmNamedFileUsage,
   RealmUser,
 } from "./schema/index.js";
-import { dataDir, stdin } from "./utils/mod.js";
+import { dataDir, stdin, prompt } from "./utils/mod.js";
 import { closeSync, existsSync } from "fs";
-import { exec } from "child_process";
+import { execSync } from "child_process";
 
 console.log("[INFO] OSU!list");
 
@@ -49,12 +49,7 @@ for (const [i, beatmaps] of beatmapSets.entries()) {
 }
 
 const hashedFilePath = (hash: string) => {
-  return `${dataDir}/osu/files/${hash.slice(0, 1)}/${
-    hash.slice(
-      0,
-      2,
-    )
-  }/${hash}`;
+  return `${dataDir()}/osu/files/${hash.slice(0, 1)}/${hash.slice(0, 2)}/${hash}`;
 };
 
 const getNamedFileHash = (fileName: string, beatmapSet: BeatmapSet) => {
@@ -86,7 +81,7 @@ if (filePath && checkFileExists(filePath)) {
 
 // Open file using exo-open.
 console.log(`Playing file ${selectedBeatmapSet.Beatmaps[0].Metadata.Title}`);
-filePath && exec(`exo-open ${filePath}`);
+filePath && execSync(`exo-open ${filePath}`);
 
 /* // Filter for all tasks with a status of "Open".
 const openTasks = tasks.filtered("status = 'Open'"); */
