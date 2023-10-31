@@ -132,3 +132,6 @@ pnpm-lock.yaml
 client.realm.lock
 client.realm
 package-lock.json
+.vscode/settings.json
+deno.lock
+deno.jsonc
