@@ -1,5 +1,5 @@
-import type { ObjectSchema } from "realm";
 import Realm from "realm";
+import type { ObjectSchema } from "realm";
 
 export class RealmUser extends Realm.Object<RealmUser> {
   OnlineID!: number;

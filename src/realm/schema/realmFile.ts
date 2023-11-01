@@ -1,5 +1,5 @@
-import type { ObjectSchema } from "realm";
 import Realm from "realm";
+import type { ObjectSchema } from "realm";
 
 export class RealmFile extends Realm.Object<RealmFile> {
   Hash?: string;

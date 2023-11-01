@@ -1,5 +1,5 @@
-import type { ObjectSchema } from "realm";
 import Realm from "realm";
+import type { ObjectSchema } from "realm";
 import { Beatmap } from "./beatmap.js";
 import { RealmNamedFileUsage } from "./realmNamedFileUsage.js";
 

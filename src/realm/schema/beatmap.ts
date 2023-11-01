@@ -1,5 +1,5 @@
-import type { ObjectSchema } from "realm";
 import Realm from "realm";
+import type { ObjectSchema } from "realm";
 import { BeatmapMetadata } from "./beatmapMetadata.js";
 
 export class Beatmap extends Realm.Object<Beatmap> {

@@ -1,3 +1,5 @@
+import Realm from "realm";
+import path from "node:path";
 import { getDataDir } from "../utils/mod.js";
 import {
   Beatmap,
@@ -8,8 +10,8 @@ import {
   RealmUser,
 } from "./schema/mod.js";
 
-export const getLazerDB = (realmDBPath: string) => {
-  return Realm.open({
+export const getLazerDB = async (realmDBPath: string) => {
+  const realm = await Realm.open({
     schema: [
       BeatmapSet,
       RealmFile,
@@ -26,14 +28,21 @@ export const getLazerDB = (realmDBPath: string) => {
       );
     },
   });
+
+  return realm;
 };
 
-
 export const hashedFilePath = (hash: string) => {
-  return `${getDataDir()}/osu/files/${hash.slice(0, 1)}/${hash.slice(
-    0,
-    2,
-  )}/${hash}`;
+  const dataDir = getDataDir();
+  if (!dataDir) return null;
+  return path.join(
+    dataDir,
+    "osu",
+    "files",
+    hash.slice(0, 1),
+    hash.slice(0, 2),
+    hash,
+  );
 };
 
 export const getNamedFileHash = (fileName: string, beatmapSet: BeatmapSet) => {
@@ -43,4 +52,3 @@ export const getNamedFileHash = (fileName: string, beatmapSet: BeatmapSet) => {
   }
   return undefined;
 };
-

@@ -1,5 +1,5 @@
-import type { ObjectSchema } from "realm";
 import Realm from "realm";
+import type { ObjectSchema } from "realm";
 import { RealmFile } from "./realmFile.js";
 
 export class RealmNamedFileUsage extends Realm.Object<RealmNamedFileUsage> {

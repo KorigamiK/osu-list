@@ -9,13 +9,13 @@ export function getDataDir(): string | null {
       const xdg = process.env["XDG_DATA_HOME"];
       if (xdg) return xdg;
       const home = process.env["HOME"];
-      if (home) return `${home}/.local/share`;
+      if (home) return path.join(home, ".local", "share");
       break;
     }
 
     case "darwin": {
       const home = process.env["HOME"];
-      if (home) return `${home}/Library/Application Support`;
+      if (home) return path.join(home, "Library", "Application Support");
       break;
     }
 
@@ -34,13 +34,13 @@ export function getConfigDir(): string | null {
       const xdg = process.env["XDG_CONFIG_HOME"];
       if (xdg) return xdg;
       const home = process.env["HOME"];
-      if (home) return `${home}/.config`;
+      if (home) return path.join(home, ".config");
       break;
     }
 
     case "darwin": {
       const home = process.env["HOME"];
-      if (home) return `${home}/Library/Preferences`;
+      if (home) return path.join(home, "Library", "Preferences");
       break;
     }
 
