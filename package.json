@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "osu-play.js",
-  "bin": "osu-play.js",
+  "main": "bin/osu-play.js",
+  "bin": {
+    "osu-play": "./bin/osu-play.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node dist/osu-play.js"
+    "start": "tsc && ./bin/osu-play.js",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
