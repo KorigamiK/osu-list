@@ -3,8 +3,8 @@ import { defineConfig } from "tsup";
 console.log("Building...");
 
 export default defineConfig({
-  entry: ["src/mod.ts", "src/cli/main.ts"],
-  format: ["cjs", "esm"], // Build for commonJS and ESmodules
+  entry: ["index.ts", "src/cli/main.ts"],
+  format: ["esm"], // Build for ESmodules and not commonJS for now
   dts: true, // Generate declaration file (.d.ts)
   splitting: false,
   sourcemap: true,

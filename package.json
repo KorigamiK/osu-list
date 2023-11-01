@@ -1,19 +1,21 @@
 {
   "name": "osu-play",
-  "version": "1.0.2",
-  "description": "Play OSU!Lazer beatmaps from the terminal.",
+  "version": "1.0.3",
+  "description": "Play music from your osu!lazer beatmaps from the terminal.",
   "type": "module",
   "main": "bin/osu-play.js",
-  "module": "dist/mod.js",
+  "module": "index.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "bin",
     "dist",
+    "src",
+    "index.ts",
     "package.json",
     "README.md",
     "tsconfig.json",
     "LICENSE"
   ],
-  "types": "dist/index.d.ts",
   "bin": {
     "osu-play": "./bin/osu-play.js"
   },
