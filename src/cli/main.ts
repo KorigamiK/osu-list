@@ -4,11 +4,11 @@ import { execSync } from "node:child_process";
 
 import Realm from "realm";
 import prompts from "prompts";
-import { BeatmapSet } from "./realm/schema/mod.js";
-import { getConfigDir, getRealmDBPath } from "./utils/mod.js";
-import { getLazerDB, getNamedFileHash, hashedFilePath } from "./realm/mod.js";
+import { BeatmapSet } from "../realm/schema/mod.js";
+import { getConfigDir, getRealmDBPath } from "../utils/mod.js";
+import { getLazerDB, getNamedFileHash, hashedFilePath } from "../realm/mod.js";
 
-export default async function main() {
+export async function main() {
   console.log("[INFO] OSU!list");
 
   const realmDBPath = getRealmDBPath(
@@ -42,7 +42,8 @@ export default async function main() {
       choices: beatmapSets.map((beatmapSet) => {
         const meta = beatmapSet.Beatmaps[0].Metadata;
         return {
-          title: `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
+          title:
+            `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
           value: beatmapSet,
         };
       }),

@@ -1,28 +1,53 @@
 {
   "name": "osu-play",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Play OSU!Lazer beatmaps from the terminal.",
   "type": "module",
   "main": "bin/osu-play.js",
+  "module": "dist/mod.js",
+  "files": [
+    "bin",
+    "dist",
+    "package.json",
+    "README.md",
+    "tsconfig.json",
+    "LICENSE"
+  ],
+  "types": "dist/index.d.ts",
   "bin": {
     "osu-play": "./bin/osu-play.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && ./bin/osu-play.js",
+    "build": "tsup",
+    "start": "./bin/osu-play.js",
+    "dev:start": "tsc && ./bin/osu-play.js",
     "clean": "rm -rf dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "KorigamiK",
+  "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.8.9",
     "@types/prompts": "^2.4.7",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@types/node": "^20.8.9",
     "prompts": "^2.4.2",
     "realm": "^12.2.1",
     "yargs": "^17.7.2"
-  }
+  },
+  "keywords": [
+    "osu",
+    "lazer",
+    "cli",
+    "music",
+    "game",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KorigamiK/osu-play"
+  },
+  "bugs": "https://github.com/KorigamiK/osu-play/issues"
 }
