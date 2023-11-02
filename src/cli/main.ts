@@ -1,10 +1,10 @@
 import path from "node:path";
 import { existsSync } from "node:fs";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 
 import Realm from "realm";
 import prompts from "prompts";
-import { Beatmap, BeatmapSet } from "../realm/schema/mod.js";
+import { BeatmapSet } from "../realm/schema/mod.js";
 import { getConfigDir, getDataDir, getRealmDBPath } from "../utils/mod.js";
 import { getLazerDB, getNamedFileHash, hashedFilePath } from "../realm/mod.js";
 
@@ -30,6 +30,12 @@ export function getArgs() {
       default: path.join(getConfigDir() || ".", "osu-play"),
       alias: "c",
       describe: "Config directory",
+    },
+    loop: {
+      type: "boolean",
+      default: false,
+      alias: "l",
+      describe: "Loop the playlist on end",
     },
   }).argv;
   return argv;
@@ -71,8 +77,8 @@ export async function main() {
 
   const songSet = new Set<string>();
   const uniqueBeatmaps: {
-    value: { title: string; path: string | null };
     title: string;
+    path: string | null;
   }[] = [];
 
   for (const beatmapSet of beatmapSets) {
@@ -85,33 +91,50 @@ export async function main() {
       const meta = beatmap.Metadata;
       const path = hashedFilePath(hash);
       const title = `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`;
-      uniqueBeatmaps.push({
-        value: { title, path },
-        title,
-      });
+      uniqueBeatmaps.push({ title, path });
     }
   }
 
   console.log(`beatmap songs: ${beatmapSets.length}`);
 
   // Get the map index from the user
-  const selectedBeatmap: (typeof uniqueBeatmaps)[number]["value"] = (
+  let selectedBeatmap: number = (
     await prompts({
       type: "autocomplete",
       name: "beatmap",
       message: "Which map do you want to play:",
-      choices: uniqueBeatmaps,
+      choices: uniqueBeatmaps.map((mp, index) => ({
+        title: mp.title,
+        value: index,
+      })),
     })
   ).beatmap;
 
-  console.log(`Map : ${selectedBeatmap.title}`);
-  if (selectedBeatmap.path && existsSync(selectedBeatmap.path)) {
-    console.log(`File exists: ${selectedBeatmap.path}`);
-    // Open file using exo-open.
-    console.log(`Playing file ${selectedBeatmap.title}`);
-    selectedBeatmap.path && execSync(`exo-open ${selectedBeatmap.path}`);
-  } else {
-    console.log(`File does not exist: ${selectedBeatmap.path}`);
+  for (let i = selectedBeatmap; i < uniqueBeatmaps.length; ++i) {
+    const beatmap = uniqueBeatmaps[i];
+    console.log(`Map : ${beatmap.title}`);
+    if (beatmap.path && existsSync(beatmap.path)) {
+      // Open file using exo-open.
+      console.log(`File exists: ${beatmap.path}`);
+      console.log(`Playing ${beatmap.title}`);
+      try {
+        execFileSync("exo-open", [beatmap.path]);
+      } catch (err) {
+        console.log(`Error: ${err}`);
+        break;
+      }
+    } else {
+      console.log(`File does not exist: ${beatmap.path}`);
+    }
+    if (i < uniqueBeatmaps.length - 1) {
+      // Wait 1 second between
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } else if (argv.loop) {
+      console.log('[INFO] Looping playlist');
+      i = 0;
+    } else {  
+      console.log('[INFO] Done. Use --loop to loop the playlist');
+    }
   }
 
   realm.close();
