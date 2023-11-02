@@ -5,14 +5,55 @@ import { execSync } from "node:child_process";
 import Realm from "realm";
 import prompts from "prompts";
 import { BeatmapSet } from "../realm/schema/mod.js";
-import { getConfigDir, getRealmDBPath } from "../utils/mod.js";
+import { getConfigDir, getDataDir, getRealmDBPath } from "../utils/mod.js";
 import { getLazerDB, getNamedFileHash, hashedFilePath } from "../realm/mod.js";
 
+import yargs from "yargs/yargs";
+import { hideBin } from "yargs/helpers";
+
+export function getArgs() {
+  const argv = yargs(hideBin(process.argv)).options({
+    reload: {
+      type: "boolean",
+      default: false,
+      alias: "r",
+      describe: "Reload lazer database",
+    },
+    osuDataDir: {
+      type: "string",
+      default: path.join(getDataDir() || '.', 'osu'),
+      alias: "d",
+      describe: "Osu!lazer data directory",
+    },
+    configDir: {
+      type: "string",
+      default: path.join(getConfigDir() || ".", "osu-play"),
+      alias: "c",
+      describe: "Config directory",
+    }
+  }).argv;
+  return argv;
+}
+
 export async function main() {
+  const argv = await getArgs();
   console.log("[INFO] OSU!list");
 
+  let reload = false;
+  let osuDataDir = argv.osuDataDir;
+
+  if (argv.reload) {
+    console.log("[INFO] Reloading lazer database");
+    reload = true;
+  }
+
+  if (argv.osuDataDir !== getDataDir()) {
+    console.log(`[INFO] Using osu!lazer data directory: ${argv.osuDataDir}`);
+  }
+
   const realmDBPath = getRealmDBPath(
-    path.join(getConfigDir() || ".", "osu-play"),
+    argv.configDir,
+    { reload, osuDataDir },
   );
 
   if (realmDBPath == null) {
@@ -42,8 +83,7 @@ export async function main() {
       choices: beatmapSets.map((beatmapSet) => {
         const meta = beatmapSet.Beatmaps[0].Metadata;
         return {
-          title:
-            `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
+          title: `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
           value: beatmapSet,
         };
       }),

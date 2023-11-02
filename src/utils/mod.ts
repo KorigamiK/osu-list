@@ -1,7 +1,7 @@
 import path from "node:path";
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 
-export function getDataDir(): string | null {
+export function getDataDir(): string | undefined {
   switch (process.platform) {
     case "linux":
     case "openbsd":
@@ -20,13 +20,13 @@ export function getDataDir(): string | null {
     }
 
     case "win32":
-      return process.env["LOCALAPPDATA"] ?? null;
+      return process.env["LOCALAPPDATA"] ?? undefined;
   }
 
-  return null;
+  return undefined;
 }
 
-export function getConfigDir(): string | null {
+export function getConfigDir(): string | undefined {
   switch (process.platform) {
     case "openbsd":
     case "freebsd":
@@ -45,10 +45,10 @@ export function getConfigDir(): string | null {
     }
 
     case "win32":
-      return process.env["APPDATA"] ?? null;
+      return process.env["APPDATA"] ?? undefined;
   }
 
-  return null;
+  return undefined;
 }
 
 /**
@@ -56,23 +56,19 @@ export function getConfigDir(): string | null {
  */
 export function getRealmDBPath(
   appConfigDir: string,
-  osuDataDir?: string,
-  reload: boolean = false,
+  options: {
+    osuDataDir: string;
+    reload: boolean;
+  } = { reload: false, osuDataDir: getDataDir() || "." },
 ) {
   const localDBPath = path.join(appConfigDir, "client.realm");
-  if (!reload && existsSync(localDBPath)) return localDBPath;
+  if (!options.reload && existsSync(localDBPath)) return localDBPath;
 
-  const osuDBPath = path.join(
-    osuDataDir || getDataDir()! || ".",
-    "osu",
-    "client.realm",
-  );
+  const osuDBPath = path.join(options.osuDataDir, "client.realm");
   if (existsSync(osuDBPath)) {
-    console.log(
-      `[getRealmDBPath]: ${osuDBPath} is being imported from osu!lazer to ${localDBPath}`,
-    );
-    mkdirSync(appConfigDir);
-    copyFileSync(osuDBPath, localDBPath);
+    console.log( `[getRealmDBPath]: ${osuDBPath} is being imported from osu!lazer to ${localDBPath}`);
+    mkdirSync(appConfigDir, { recursive: true });
+    copyFileSync(osuDBPath, localDBPath );
     return localDBPath;
   } else {
     console.log(`[getRealmDBPath]: ${osuDBPath} not found`);

@@ -35,6 +35,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@types/yargs": "^17.0.29",
     "prompts": "^2.4.2",
     "realm": "^12.2.1",
     "yargs": "^17.7.2"
