@@ -1,6 +1,6 @@
 {
   "name": "osu-play",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Play music from your osu!lazer beatmaps from the terminal.",
   "type": "module",
   "main": "bin/osu-play.js",
