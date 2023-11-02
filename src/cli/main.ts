@@ -4,7 +4,7 @@ import { execSync } from "node:child_process";
 
 import Realm from "realm";
 import prompts from "prompts";
-import { BeatmapSet } from "../realm/schema/mod.js";
+import { Beatmap, BeatmapSet } from "../realm/schema/mod.js";
 import { getConfigDir, getDataDir, getRealmDBPath } from "../utils/mod.js";
 import { getLazerDB, getNamedFileHash, hashedFilePath } from "../realm/mod.js";
 
@@ -21,7 +21,7 @@ export function getArgs() {
     },
     osuDataDir: {
       type: "string",
-      default: path.join(getDataDir() || '.', 'osu'),
+      default: path.join(getDataDir() || ".", "osu"),
       alias: "d",
       describe: "Osu!lazer data directory",
     },
@@ -30,7 +30,7 @@ export function getArgs() {
       default: path.join(getConfigDir() || ".", "osu-play"),
       alias: "c",
       describe: "Config directory",
-    }
+    },
   }).argv;
   return argv;
 }
@@ -51,10 +51,7 @@ export async function main() {
     console.log(`[INFO] Using osu!lazer data directory: ${argv.osuDataDir}`);
   }
 
-  const realmDBPath = getRealmDBPath(
-    argv.configDir,
-    { reload, osuDataDir },
-  );
+  const realmDBPath = getRealmDBPath(argv.configDir, { reload, osuDataDir });
 
   if (realmDBPath == null) {
     console.log("[ERROR] Realm DB not found");
@@ -72,39 +69,50 @@ export async function main() {
 
   const beatmapSets = realm.objects(BeatmapSet);
 
-  console.log(`beatmaps: ${beatmapSets.length}`);
+  const songSet = new Set<string>();
+  const uniqueBeatmaps: {
+    value: { title: string; path: string | null };
+    title: string;
+  }[] = [];
 
-  // Get the map index from the user
-  const selectedBeatmapSet = (
-    await prompts({
-      type: "autocomplete",
-      name: "beatmapSet",
-      message: "Which map do you want to play:",
-      choices: beatmapSets.map((beatmapSet) => {
-        const meta = beatmapSet.Beatmaps[0].Metadata;
-        return {
-          title: `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`,
-          value: beatmapSet,
-        };
-      }),
-    })
-  ).beatmapSet;
-
-  console.log(`Map : ${selectedBeatmapSet.Beatmaps[0].Metadata.Title}`);
-  const fileName = selectedBeatmapSet.Beatmaps[0].Metadata.AudioFile;
-  const fileHash = fileName
-    ? getNamedFileHash(fileName, selectedBeatmapSet)
-    : undefined;
-  const filePath = fileHash ? hashedFilePath(fileHash) : undefined;
-  if (filePath && existsSync(filePath)) {
-    console.log(`File exists: ${filePath}`);
-  } else {
-    console.log(`File does not exist: ${filePath}`);
+  for (const beatmapSet of beatmapSets) {
+    for (const beatmap of beatmapSet.Beatmaps) {
+      const fileName = beatmap.Metadata.AudioFile;
+      const hash = getNamedFileHash(fileName ?? "", beatmapSet);
+      if (!hash) continue;
+      if (songSet.has(hash)) continue;
+      songSet.add(hash);
+      const meta = beatmap.Metadata;
+      const path = hashedFilePath(hash);
+      const title = `${meta.Title} : ${meta.Artist} - ${meta.TitleUnicode} : ${meta.ArtistUnicode}`;
+      uniqueBeatmaps.push({
+        value: { title, path },
+        title,
+      });
+    }
   }
 
-  // Open file using exo-open.
-  console.log(`Playing file ${selectedBeatmapSet.Beatmaps[0].Metadata.Title}`);
-  filePath && execSync(`exo-open ${filePath}`);
+  console.log(`beatmap songs: ${beatmapSets.length}`);
+
+  // Get the map index from the user
+  const selectedBeatmap: (typeof uniqueBeatmaps)[number]["value"] = (
+    await prompts({
+      type: "autocomplete",
+      name: "beatmap",
+      message: "Which map do you want to play:",
+      choices: uniqueBeatmaps,
+    })
+  ).beatmap;
+
+  console.log(`Map : ${selectedBeatmap.title}`);
+  if (selectedBeatmap.path && existsSync(selectedBeatmap.path)) {
+    console.log(`File exists: ${selectedBeatmap.path}`);
+    // Open file using exo-open.
+    console.log(`Playing file ${selectedBeatmap.title}`);
+    selectedBeatmap.path && execSync(`exo-open ${selectedBeatmap.path}`);
+  } else {
+    console.log(`File does not exist: ${selectedBeatmap.path}`);
+  }
 
   realm.close();
   console.log(`realm.isClosed: ${realm.isClosed}`);
