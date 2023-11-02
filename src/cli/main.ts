@@ -12,7 +12,9 @@ import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 
 export function getArgs() {
-  const argv = yargs(hideBin(process.argv)).options({
+  const argv = yargs(hideBin(process.argv))
+    .usage("Play music from your osu!lazer beatmaps from the terminal\nUsage: $0 [options]")
+    .options({
     reload: {
       type: "boolean",
       default: false,
