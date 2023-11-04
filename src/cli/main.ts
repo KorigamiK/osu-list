@@ -1,5 +1,5 @@
 import path from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 
 import Realm from "realm";
@@ -20,6 +20,10 @@ export function getArgs() {
       default: false,
       alias: "r",
       describe: "Reload lazer database",
+    },
+    exportPlaylist: {
+      type: "string",
+      describe: "Export playlist to a file",
     },
     osuDataDir: {
       type: "string",
@@ -98,6 +102,14 @@ export async function main() {
   }
 
   console.log(`beatmap songs: ${beatmapSets.length}`);
+
+  if (argv.exportPlaylist) {
+    console.log(`[INFO] Exporting playlist to ${argv.exportPlaylist}`);
+    const playlist = uniqueBeatmaps.map((mp) => mp.path).join("\n");
+    writeFileSync(argv.exportPlaylist, playlist);
+    console.log(`[INFO] Done. Use something like \`mpv --playlist=${argv.exportPlaylist}\` to play the playlist`);
+    return;
+  }
 
   // Get the map index from the user
   let selectedBeatmap: number = (
