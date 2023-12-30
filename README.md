@@ -1,6 +1,6 @@
-# OSU!Pplay
+# osu!play
 
-Listen to your favourite [OSU!Lazer](https://lazer.ppy.sh) beatmaps as a spotify playlist from the terminal
+Listen to your favourite [osu!lazer](https://lazer.ppy.sh) beatmaps as a spotify playlist from the terminal
 
 ## Installation
 
