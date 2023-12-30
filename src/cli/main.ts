@@ -43,13 +43,18 @@ export function getArgs() {
       alias: "l",
       describe: "Loop the playlist on end",
     },
+    help: {
+      type: "boolean",
+      alias: "h",
+      describe: "Show help",
+    }
   }).argv;
   return argv;
 }
 
 export async function main() {
   const argv = await getArgs();
-  console.log("[INFO] OSU!list");
+  console.log("[INFO] osu!play");
 
   let reload = false;
   let osuDataDir = argv.osuDataDir;

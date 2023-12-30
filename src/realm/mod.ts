@@ -21,7 +21,7 @@ export const getLazerDB = async (realmDBPath: string) => {
       RealmUser,
     ],
     path: realmDBPath,
-    schemaVersion: 36,
+    schemaVersion: 41,
     onMigration: (oldRealm, newRealm) => {
       console.log(
         `[onMigration]: Migrating ${oldRealm.path} - ${oldRealm.schemaVersion} -> ${newRealm.path} - ${newRealm.schemaVersion}`,
