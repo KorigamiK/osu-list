@@ -1,34 +1,46 @@
-# osu!play
+<h1 align="center">
+	<br>
+  osu!play
+	<br>
 
-Listen to your favourite [osu!lazer](https://lazer.ppy.sh) beatmaps as a spotify playlist from the terminal
+[![NPM version](https://img.shields.io/npm/v/osu-play.svg?style=flat)](https://npmjs.org/package/osu-play)
+[![Downloads](https://badgen.net/npm/dt/osu-play)](https://www.npmjs.com/package/osu-play)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
+</h1>
+
+> Listen to your favourite [osu!lazer](https://lazer.ppy.sh) beatmaps as a
+> spotify playlist from the terminal
 
 ## Installation
 
 ### Requirements
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
-- [osu!lazer](https://lazer.ppy.sh/home/download) with some beatmaps to listen to 😉
+- [osu!lazer](https://lazer.ppy.sh/home/download) with some beatmaps to listen
+  to 😉
 - That's it!
 
 ### Quick start
 
 - Try out the latest release without installing anything:
 
-```sh
-npx osu-play # using npm
-pnpm dlx osu-play # using pnpm
-```
+  ```sh
+  npx osu-play # using npm
+  pnpm dlx osu-play # using pnpm
+  ```
 
 - Install the latest release globally:
 
-```sh
-npm i -g osu-play # using npm
-pnpm i -g osu-play # using pnpm
-```
+  ```sh
+  npm i -g osu-play # using npm
+  pnpm i -g osu-play # using pnpm
+  ```
 
 ## Usage
 
 The `osu-play` command can be used with the following options:
+
 ```sh
 ➜  korigamik git:(main) ✗ osu-play --help
 Play music from your osu!lazer beatmaps from the terminal
@@ -55,4 +67,3 @@ import { lazer } from "osu-play";
 
 const realm = getLazerDB();
 ```
-
